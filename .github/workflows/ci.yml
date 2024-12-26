@@ -3,37 +3,37 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - main
+      - main   # Triggers on push to the main branch
   pull_request:
     branches:
-      - main
+      - main   # Triggers on PR targeting the main branch
 
 jobs:
   build_and_push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # The job runs on the latest Ubuntu VM
     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v3
+    - name: Check out the repository
+      uses: actions/checkout@v3    # Checks out the repository's code
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2    # Setup Docker Buildx to enable buildx functionality
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2    # Docker Hub login
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}    # Use the secret for your Docker Hub username
+        password: ${{ secrets.DOCKER_PASSWORD }}    # Use the secret for your Docker Hub password
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and push frontend Docker image
+      uses: docker/build-push-action@v2    # Action to build and push Docker images
+      with:
+        context: ./frontend   # Path to the frontend directory
+        push: true
+        tags: sanjayraj/samplev1-frontend:latest   # Tag the image with your Docker Hub username and "latest"
         
-      - name: Build and push frontend Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: ./frontend
-          push: true
-          tags: yourdockerhubusername/frontend:latest
-      
-      - name: Build and push backend Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: ./backend
-          push: true
-          tags: yourdockerhubusername/backend:latest
+    - name: Build and push backend Docker image
+      uses: docker/build-push-action@v2    # Action to build and push Docker images
+      with:
+        context: ./backend    # Path to the backend directory
+        push: true
+        tags: sanjayraj/samplev1-backend:latest   # Tag the image with your Docker Hub username and "latest"
