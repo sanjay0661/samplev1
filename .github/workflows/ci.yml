@@ -3,37 +3,37 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - main   # Triggers on push to the main branch
+      - main    # Trigger the pipeline when code is pushed to the 'main' branch
   pull_request:
     branches:
-      - main   # Triggers on PR targeting the main branch
+      - main    # Trigger the pipeline on pull requests targeting 'main'
 
 jobs:
   build_and_push:
-    runs-on: ubuntu-latest   # The job runs on the latest Ubuntu VM
+    runs-on: ubuntu-latest   # This job will run on the latest Ubuntu environment
+    
     steps:
     - name: Check out the repository
-      uses: actions/checkout@v3    # Checks out the repository's code
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2    # Setup Docker Buildx to enable buildx functionality
-    
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2    # Docker Hub login
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}    # Use the secret for your Docker Hub username
-        password: ${{ secrets.DOCKER_PASSWORD }}    # Use the secret for your Docker Hub password
+      uses: actions/checkout@v3    # Pull the code from the GitHub repository
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2   # Set up Docker Buildx for multi-platform builds (optional)
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2   # Authenticate to Docker Hub using secrets
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}    # Docker Hub username stored in GitHub secrets
+        password: ${{ secrets.DOCKER_PASSWORD }}    # Docker Hub password stored in GitHub secrets
+
+    # Step to build and push frontend Docker image
     - name: Build and push frontend Docker image
-      uses: docker/build-push-action@v2    # Action to build and push Docker images
-      with:
-        context: ./frontend   # Path to the frontend directory
-        push: true
-        tags: sanjayraj/samplev1-frontend:latest   # Tag the image with your Docker Hub username and "latest"
-        
+      run: |
+        docker build -t sanjayraj/samplev1-frontend:latest ./frontend   # Build the frontend image
+        docker tag sanjayraj/samplev1-frontend:latest sanjayraj/samplev1:latest   # Tag as 'latest' for general version
+        docker push sanjayraj/samplev1:latest    # Push the frontend image to Docker Hub
+
+    # Step to build and push backend Docker image
     - name: Build and push backend Docker image
-      uses: docker/build-push-action@v2    # Action to build and push Docker images
-      with:
-        context: ./backend    # Path to the backend directory
-        push: true
-        tags: sanjayraj/samplev1-backend:latest   # Tag the image with your Docker Hub username and "latest"
+      run: |
+        docker build -t sanjayraj/samplev1-backend:latest ./backend    # Build the backend image
+        docker push sanjayraj/samplev1-backend:latest    # Push the backend image to Docker Hub
