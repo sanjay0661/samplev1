@@ -29,11 +29,18 @@ jobs:
     - name: Build and push frontend Docker image
       run: |
         docker build -t sanjayraj/samplev1-frontend:latest ./frontend   # Build the frontend image
-        docker tag sanjayraj/samplev1-frontend:latest sanjayraj/samplev1:latest   # Tag as 'latest' for general version
-        docker push sanjayraj/samplev1:latest    # Push the frontend image to Docker Hub
+        docker tag sanjayraj/samplev1-frontend:latest sanjayraj/full-stack:frontend   # Tag it for the new repository
+        docker push sanjayraj/full-stack:frontend    # Push the frontend image to Docker Hub
 
     # Step to build and push backend Docker image
     - name: Build and push backend Docker image
       run: |
         docker build -t sanjayraj/samplev1-backend:latest ./backend    # Build the backend image
-        docker push sanjayraj/samplev1-backend:latest    # Push the backend image to Docker Hub
+        docker tag sanjayraj/samplev1-backend:latest sanjayraj/full-stack:backend   # Tag it for the new repository
+        docker push sanjayraj/full-stack:backend    # Push the backend image to Docker Hub
+
+    # Step to build and push full-stack Docker image (optional)
+    - name: Build and push full-stack Docker image
+      run: |
+        docker build -t sanjayraj/full-stack:latest ./   # Build the full-stack image using Dockerfile
+        docker push sanjayraj/full-stack:latest    # Push the full-stack image to Docker Hub
